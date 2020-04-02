@@ -89,7 +89,7 @@ public class Cvr {
         this.vinSet = vinSet;
     }
 
-    // problem 1
+    // problem 5 6
     public void setThreshold(int threshold) throws Exception{
         if(threshold < 100 || threshold > 900000)
             throw new Exception("Invalid threshold, input must from 100 to 900000");
@@ -155,6 +155,7 @@ public class Cvr {
     public void add(String key,Archive value) throws Exception{
         if(!key.equals(value.getVin())) throw new Exception("key and value do not match");
         activeVins.add(value);
+        this.resize();
 
     }
     //problem 6  remove the value through
@@ -164,7 +165,7 @@ public class Cvr {
     public Archive getArchiveByVin(String vin){
         Archive solution = null;
         for(Iterator iter = activeVins.iterator(); iter.hasNext(); ) {
-           Archive tem = (Archive) iter;
+           Archive tem = (Archive) iter.next();
            if(tem.getVin().equals(vin)) {
                solution = tem;
                break;
@@ -176,6 +177,7 @@ public class Cvr {
         Archive archive = getArchiveByVin(key);
         if(archive != null){
             activeVins.remove(archive);
+            this.resize();
             vinSet.remove(key);
             historicalRecords.get(key).add(archive);
         }
@@ -188,44 +190,105 @@ public class Cvr {
     }
     //problem 8  Not sure it is ordered by the registration time or key's lexicographic order
     // I assume it is the latter one
-    public String nextKey(String key){
+    public String nextKey(String key) {
+        if(activeVins.getClass().getName().equals("java.util.TreeSet"))
+           return nextKeyForTreeSet(key);
+        else
+            return nextKeyForPQ(key);
+
+    }
+
+        //  a helper function for treeSet
+
+        public String nextKeyForTreeSet(String key){
+            String solution = null;
+            boolean findCurrent = false;
+            for (Iterator iter = activeVins.iterator(); iter.hasNext(); ) {
+                Archive temp = (Archive) iter.next();
+                if (findCurrent == true) {
+                    solution = temp.getVin();
+                    break;
+                }
+
+                if (temp.getVin().equals(vin)) {
+                    findCurrent = true;
+                }
+
+            }
+            return solution;
+        }
+
+       public String nextKeyForPQ(String key){
+        Queue<Archive> temp =(PriorityQueue<Archive>)activeVins;
+        boolean findCurrentKey = false;
         String solution = null;
-        boolean findCurrent = false;
-        for(Iterator iter = activeVins.iterator(); iter.hasNext(); ) {
-            if(findCurrent == true){
-                Archive temp = (Archive)iter;
-                solution = temp.getVin();
+        Archive next = null;
+        while(!temp.isEmpty()){
+            Archive current = temp.poll();
+            if(findCurrentKey == true){
+                solution = current.getVin();
                 break;
             }
-
-            Archive tem = (Archive) iter;
-            if(tem.getVin().equals(vin)) {
-                findCurrent = true;
-            }
-
+            if(current.getVin().equals(key))
+                findCurrentKey = true;
         }
         return solution;
-    }
+       }
+
     //problem 9  Not sure it is ordered by the registration time or key's lexicographic order
     //    I assume it is the latter one
     public String prevKey(String key){
+        if(activeVins.getClass().getName().equals("java.util.TreeSet"))
+            return prevKeyForTreeSet(key);
+        else
+            return prevKeyForPQ(key);
+
+    }
+
+    public String prevKeyForTreeSet(String key){
         String solution = null;
         boolean findCurrent = false;
         Archive previous = null;
         for(Iterator iter = activeVins.iterator(); iter.hasNext(); ) {
+
+            Archive tem = (Archive) iter.next();
+
             if(findCurrent == true){
                 solution = previous.getVin();
                 break;
             }
 
-            Archive tem = (Archive) iter;
+
             if(tem.getVin().equals(vin)) {
                 findCurrent = true;
             }
             if(findCurrent == false)
-            previous = (Archive) iter;
+                previous = (Archive) iter;
         }
         return solution;
+
+    }
+
+    public String prevKeyForPQ(String key){
+
+        Queue<Archive> temp =(PriorityQueue<Archive>)activeVins;
+        boolean findCurrentKey = false;
+        String solution = null;
+        Archive prev = null;
+        while(!temp.isEmpty()){
+            Archive current = temp.poll();
+            if(findCurrentKey == true){
+                solution = prev.getVin();
+                break;
+            }
+
+            if(current.getVin().equals(key))
+                findCurrentKey = true;
+            if(findCurrentKey == false)
+                prev = current;
+        }
+        return solution;
+
     }
     //problem 10  prevAccids(key)  need to access historical records and get all accidents
      public ArrayList<Accident> prevAccids(String key){
