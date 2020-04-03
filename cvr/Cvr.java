@@ -27,6 +27,7 @@ public class Cvr {
 
     public Cvr(String vin) {
         this.vin = vin;
+        vinSet = new HashSet<>();
         vinSet.add(vin);
     }
 
@@ -115,16 +116,16 @@ public class Cvr {
     public  String generate(int keySize) throws Exception{
         if( keyLength != keySize)
             throw new Exception("Your input can't match the keyLength");
-
+         String vin = "";
         do {
-            String vin = "";
+            vin = "";
             for (int i = 1; i <= keyLength; i++) {
                 int sign = new Random().nextInt(36);
                 if (sign < 10) vin += sign;
                 else vin = vin + (char) (sign + 55);
             }
         }
-        while(vinSet.contains(vin));// check if this vin is used
+        while(vinSet.contains(vin));// check if this vin is used  vinSet.contains(vin)
 
         return vin;
     }
@@ -306,7 +307,83 @@ public class Cvr {
 
     public static void main(String[] args) throws Exception {
 
+        ArrayList<String> ar = new ArrayList<>();
+        ar.add("a");
+        ar.add("d");
+        ar.add("f");
+        ar.add("d");
+        ar.add("u");
+        ar.add("e");
 
+        LinkedList<String> iti = new LinkedList<>();
+
+        iti.add("cda");
+        iti.add("uda");
+        iti.add("ada");
+        iti.add("fda");
+        iti.add("oda");
+        iti.add("zda");
+        Iterator<String> uu = iti.descendingIterator();
+        Iterator<String> xx = iti.iterator();
+        while(xx.hasNext()){
+            System.out.println(xx.next());
+        }
+        Cvr a = new Cvr("ABC1234678");
+        a.setKeyLength(10);
+        Iterator<String> it = ar.iterator();
+        while(it.hasNext()){
+            System.out.println(it.next());
+        }
+
+        TreeSet<Archive> ts = new TreeSet<>();
+        System.out.println(a.generate(10) +"-----------");
+        Archive aa = new Archive(a.generate(10));
+        Archive bb = new Archive(a.generate(10));
+        Archive cc = new Archive(a.generate(10));
+        Archive dd = new Archive(a.generate(10));
+        Archive ee = new Archive(a.generate(10));
+        Archive ff = new Archive(a.generate(10));
+        ts.add(aa);
+        ts.add(bb);
+        ts.add(cc);
+        ts.add(dd);
+        ts.add(ee);
+        ts.add(ff);
+
+       Iterator<Archive> ite = ts.iterator();
+       System.out.println(ts.lower(dd)+"888888888888888");
+
+        while(ite.hasNext()){
+           System.out.println(ite.next());
+        }
+        HashMap<String,String> aaa = new HashMap<>();
+        aaa.put("8",a.generate(10));
+        aaa.put("2",a.generate(10));
+        aaa.put("3",a.generate(10));
+        aaa.put("6",a.generate(10));
+        aaa.put("5",a.generate(10));
+        aaa.put("4",a.generate(10));
+        //aaa.forEach();
+        Iterator m = aaa.keySet().iterator();// iterate key
+        Iterator n = aaa.entrySet().iterator();// iterate the whole entry, can get key and value
+        while(m.hasNext()){
+            String key = m.next().toString();
+
+            System.out.println(key);
+
+            String value = (String)aaa.get(key);
+
+            System.out.println(value);
+        }
+
+        for(HashMap e: aaa){
+
+        }
+
+        while(n.hasNext()){
+            Map.Entry entry = (Map.Entry) n.next();
+            System.out.println("Key is "+entry.getKey()+"\tab"+"Value is "+entry.getValue());
+        }
     }
 
 
